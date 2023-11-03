@@ -1,0 +1,13 @@
+deck = []
+playHand = []
+opHand = []
+
+def Uno_Start():
+    temp = []
+    for i in range(1, 10):
+         temp.append(str(i) + "R") 
+    return temp
+
+deck = Uno_Start()
+for i in deck:
+    print(i)
