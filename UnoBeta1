@@ -1,13 +1,40 @@
-deck = []
-playHand = []
-opHand = []
+from random import *
 
-def Uno_Start():
-    temp = []
-    for i in range(1, 10):
-         temp.append(str(i) + "R") 
+def Draw(deck):
+    temp = deck[randint(0, len(deck) - 1)]
+    deck.pop(deck.index(temp))
     return temp
 
-deck = Uno_Start()
-for i in deck:
-    print(i)
+def Play(list, card):
+    table = card
+    list.pop(list.index(card))
+    return list, table
+
+def Fill_Deck():
+    temp = []
+    for i in range(1, 10):
+        temp.append(str(i) + "R")
+        temp.append(str(i) + "Y")
+        temp.append(str(i) + "G")
+        temp.append(str(i) + "B")
+    return temp
+
+def Uno_Start():
+    deck = Fill_Deck()
+    playInfo = Play(deck, deck[randint(0, len(deck) - 1)])
+    table = playInfo[-1]
+    print(table)
+    '''
+    table = playInfo[-1]
+    playHand = []
+    opHand = []
+    for i in range(0, 7):
+        playHand.append(Draw(deck))
+    for i in range(0, 7):
+        opHand.append(Draw(deck))
+    print ("table: " + table)
+    for i in playHand:
+        print (i)
+        '''
+
+Uno_Start()
