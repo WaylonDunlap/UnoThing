@@ -2,8 +2,22 @@ from random import *
 
 def Draw(deck):
     temp = deck[randint(0, len(deck) - 1)]
-    deck.pop(deck.index(temp))
+    del deck[deck.index(temp)]
     return temp
+
+
+def ChooseWild(r, y, g, b):
+    wildOpt = []
+    if (r == True):
+        wildOpt.append("R")
+    if (y == True):
+        wildOpt.append("Y")
+    if (g == True):
+        wildOpt.append("G")
+    if (b == True):
+        wildOpt.append("B")
+    color = wildOpt[randint(0, len(wildOpt) - 1)]
+    return color + "0"
 
 def Play(list, card):
     table = card
@@ -13,28 +27,143 @@ def Play(list, card):
 def Fill_Deck():
     temp = []
     for i in range(1, 10):
-        temp.append(str(i) + "R")
-        temp.append(str(i) + "Y")
-        temp.append(str(i) + "G")
-        temp.append(str(i) + "B")
+        temp.append("R" + str(i))
+        temp.append("Y" + str(i))
+        temp.append("G" + str(i))
+        temp.append("B" + str(i))
+    for i in range(1, 5):
+        temp.append("WILD")
     return temp
 
 def Uno_Start():
     deck = Fill_Deck()
-    playInfo = Play(deck, deck[randint(0, len(deck) - 1)])
-    table = playInfo[-1]
-    print(table)
-    '''
-    table = playInfo[-1]
+    startCard = deck[randint(0, len(deck) - 1)]
+    if (startCard.upper() == "WILD"):
+        table = ChooseWild(True, True, True, True)
+        deck.pop(deck.index(startCard))
+    else:
+        playInfo = Play(deck, startCard)
+        table = playInfo[-1]
+        for i in playInfo:
+            if playInfo.index(i) < len(playInfo) - 2:
+                deck.append(i)
+        table = playInfo[-1]
     playHand = []
     opHand = []
     for i in range(0, 7):
         playHand.append(Draw(deck))
+    playHand.sort()
     for i in range(0, 7):
         opHand.append(Draw(deck))
-    print ("table: " + table)
-    for i in playHand:
-        print (i)
-        '''
 
-Uno_Start()
+    gameOver = False
+    while gameOver == False:
+        cardPlayed = False
+        while cardPlayed == False:
+            print("table: " + table)
+            print("—")
+            for i in playHand:
+                print(i)
+            print("—")
+            action = input("Type 'D' to Draw or 'P' to Play a card: ").upper()
+            if "P" in action.upper() and "D" not in action.upper():
+                card = input("Select a card to play: ").upper()
+                try:
+                    if (playHand.index(card.upper()) != None):
+                        if (table[0] in card or table[1] in card or card == "WILD"):
+                            if (card == "WILD"):
+                                wild = False
+                                while wild == False:
+                                    color = input("Type the first letter of a color: ").upper()
+                                    if color == "R" or color == "Y" or color == "G" or color == "B":
+                                        table = color + "0"
+                                        wild = True
+                                        playHand.pop(playHand.index(card))
+                                    else:
+                                        print("Invalid input")
+                            else:
+                                tableHold = Play(playHand, card)
+                                table = tableHold[-1]
+                            cardPlayed = True
+                            if (len(playHand) == 0):
+                                return "Player"
+                        else:
+                            print("The chosen card does not match the card on the table.")
+                except:
+                    print("The chosen card is not in your hand.")
+            elif "D" in action.upper() and "P" not in action.upper() and action.upper() != "WILD":
+                playHand.append(Draw(deck))
+                if (len(deck) == 0):
+                    deck = Fill_Deck()
+                playHand.sort()
+            elif (playHand.index(action.upper()) != None):
+                card = action
+                if (table[0] in card or table[1] in card or card == "WILD"):
+                    if (card == "WILD"):
+                        wild = False
+                        while wild == False:
+                            color = input("Type the first letter of a color: ").upper()
+                            if color == "R" or color == "Y" or color == "G" or color == "B":
+                                table = color + "0"
+                                wild = True
+                                playHand.pop(playHand.index(card))
+                            else:
+                                print("Invalid input")
+                    else:
+                        tableHold = Play(playHand, card)
+                        table = tableHold[-1]
+                    cardPlayed = True
+                    if (len(playHand) == 0):
+                        return "Player"
+                else:
+                    print("The chosen card does not match the card on the table.")
+        else:
+            cardPlayed = False
+            while cardPlayed == False:
+                for card in opHand:
+                    if (table[0] in card or table[1] in card):
+                        tableHold = Play(opHand, card)
+                        table = tableHold[-1]
+                        print("The computer played %s. They now have %s cards" % (table, str(len(opHand))))
+                        if (len(opHand) == 1):
+                            print ("UNO!")
+                        cardPlayed = True
+                        if (len(opHand) == 0):
+                            return "Computer"
+                        break
+                else:
+                    if ("WILD" in opHand):
+                        for card in opHand:
+                            if (card.upper() == "WILD"):
+                                if (len(opHand) > 1):
+                                    table = ChooseWild(any("R" in individual for individual in opHand), any("Y" in individual for individual in opHand), any("G" in individual for individual in opHand), any("B" in individual for individual in opHand))
+                                opHand.pop(opHand.index(card))
+                                print("The computer played a Wild. They now have %s cards" % len(opHand))
+                                if (len(opHand) == 1):
+                                    print("UNO!")
+                                cardPlayed = True
+                                if (len(opHand) == 0):
+                                    return "Computer"
+                                break
+                        break
+                    else:
+                        opHand.append(Draw(deck))
+                        print("The computer drew. They now have %s cards" % len(opHand))
+                        if (len(deck) == 0):
+                            deck = Fill_Deck()
+
+stop = False
+while (stop == False):
+    winner = Uno_Start()
+    if (winner == "Player"):
+        print("Congratulations, you won!")
+    elif (winner == "Computer"):
+        print("Computer takes this round.")
+    else:
+        print("Error")
+    response = input("Would you like to play again? Y/N: ")
+    if (response.upper() == "Y"):
+        stop = False
+    else:
+        stop = True
+print("Thanks for playing!")
