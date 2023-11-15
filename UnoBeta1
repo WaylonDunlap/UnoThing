@@ -96,26 +96,28 @@ def Uno_Start():
                 if (len(deck) == 0):
                     deck = Fill_Deck()
                 playHand.sort()
-            elif (playHand.index(action.upper()) != None):
-                card = action
-                if (table[0] in card or table[1] in card or card == "WILD"):
-                    if (card == "WILD"):
-                        wild = False
-                        while wild == False:
-                            color = input("Type the first letter of a color: ").upper()
-                            if color == "R" or color == "Y" or color == "G" or color == "B":
-                                table = color + "0"
-                                wild = True
-                                playHand.pop(playHand.index(card))
+            else:
+                try:
+                    if (playHand.index(action.upper()) != None):
+                        card = action
+                        if (table[0] in card or table[1] in card or card == "WILD"):
+                            if (card == "WILD"):
+                                wild = False
+                                while wild == False:
+                                    color = input("Type the first letter of a color: ").upper()
+                                    if color == "R" or color == "Y" or color == "G" or color == "B":
+                                        table = color + "0"
+                                        wild = True
+                                        playHand.pop(playHand.index(card))
+                                    else:
+                                        print("Invalid input")
                             else:
-                                print("Invalid input")
-                    else:
-                        tableHold = Play(playHand, card)
-                        table = tableHold[-1]
-                    cardPlayed = True
-                    if (len(playHand) == 0):
-                        return "Player"
-                else:
+                                tableHold = Play(playHand, card)
+                                table = tableHold[-1]
+                            cardPlayed = True
+                            if (len(playHand) == 0):
+                                 return "Player"
+                except:
                     print("The chosen card does not match the card on the table.")
         else:
             cardPlayed = False
